@@ -1,7 +1,6 @@
 import os
 import asyncio
 import streamlit as st
-from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
@@ -41,9 +40,11 @@ def get_text_chunk(text):
 
 @st.cache_resource
 def get_embeddings_client():
+    api_key = st.secrets["GOOGLE_API_KEY"]
     return GoogleGenerativeAIEmbeddings(
         model="models/embedding-001",
         language="en",
+         api_key=api_key
     )
 
 
@@ -55,12 +56,14 @@ def get_vectorstore(text_chunks):
 
 
 def get_conversation_chain(vectorstore):
+    api_key = st.secrets["GOOGLE_API_KEY"]
     llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0)
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages= True)
     conversation_chain = ConversationalRetrievalChain.from_llm(
         llm = llm,
         retriever = vectorstore.as_retriever(),
-        memory = memory
+        memory = memory,
+        api_key = api_key
     )
     return conversation_chain
 
@@ -77,7 +80,7 @@ def handle_user_input(user_question):
 
 def main():
     #load environment variables
-    load_dotenv()
+    
     st.set_page_config(page_title = "ChatPDF", page_icon=":books:", layout="wide")
     st.write(css,unsafe_allow_html=True)
 
