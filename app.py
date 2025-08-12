@@ -57,13 +57,12 @@ def get_vectorstore(text_chunks):
 
 def get_conversation_chain(vectorstore):
     api_key = st.secrets["GOOGLE_API_KEY"]
-    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0, api_key = api_key)
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages= True)
     conversation_chain = ConversationalRetrievalChain.from_llm(
         llm = llm,
         retriever = vectorstore.as_retriever(),
-        memory = memory,
-        api_key = api_key
+        memory = memory
     )
     return conversation_chain
 
