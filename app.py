@@ -6,6 +6,7 @@ from langchain.text_splitter import CharacterTextSplitter
 #from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
 from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain.prompts import PromptTemplate
 from langchain_community.vectorstores import FAISS
 #from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.memory import ConversationBufferMemory
@@ -64,11 +65,33 @@ def get_conversation_chain(vectorstore):
     )
     llm = ChatHuggingFace(llm=huggingface_llm)
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages= True)
+    
+    prompt_template = """
+    You are a helpful assistant that answers strictly based on the provided context.
+    If the answer is not found in the context, respond with: "I don't know based on the provided PDFs."
+
+    Context:
+    {context}
+
+    Question:
+    {question}
+
+    Answer strictly based on the context:
+    """
+    
+    prompt = PromptTemplate(
+        template=prompt_template,
+        input_variables=["context", "question"]
+    )
+    
     conversation_chain = ConversationalRetrievalChain.from_llm(
         llm = llm,
         retriever = vectorstore.as_retriever(),
-        memory = memory
+        memory = memory,
+        combine_docs_chain_kwargs={"prompt": prompt} 
     )
+
+    
     return conversation_chain
 
 
