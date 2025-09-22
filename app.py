@@ -3,9 +3,10 @@ import asyncio
 import streamlit as st
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+#from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
 from langchain_community.vectorstores import FAISS
-from langchain_google_genai import ChatGoogleGenerativeAI
+#from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains.conversational_retrieval.base import ConversationalRetrievalChain
 from template import css, bot_template, user_template
@@ -40,11 +41,9 @@ def get_text_chunk(text):
 
 @st.cache_resource
 def get_embeddings_client():
-    api_key = st.secrets["GOOGLE_API_KEY"]
-    return GoogleGenerativeAIEmbeddings(
-        model="models/embedding-001",
-        language="en",
-         api_key=api_key
+    api_key = st.secrets["HUGGINGFACEHUB_API_TOKEN"]
+    return HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
     )
 
 
@@ -56,7 +55,7 @@ def get_vectorstore(text_chunks):
 
 
 def get_conversation_chain(vectorstore):
-    api_key = st.secrets["GOOGLE_API_KEY"]
+    api_key = st.secrets["HUGGINGFACEHUB_API_TOKEN"]
     llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0, api_key = api_key)
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages= True)
     conversation_chain = ConversationalRetrievalChain.from_llm(
