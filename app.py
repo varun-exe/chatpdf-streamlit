@@ -62,7 +62,7 @@ def get_conversation_chain(vectorstore):
         temperature=0.5,
         max_new_tokens=512
     )
-    llm = ChatHuggingFace(llm=llm)
+    llm = ChatHuggingFace(llm=huggingface_llm)
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages= True)
     conversation_chain = ConversationalRetrievalChain.from_llm(
         llm = llm,
