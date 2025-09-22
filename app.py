@@ -56,7 +56,12 @@ def get_vectorstore(text_chunks):
 
 def get_conversation_chain(vectorstore):
     api_key = st.secrets["HUGGINGFACEHUB_API_TOKEN"]
-    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0, api_key = api_key)
+    huggingface_llm = HuggingFaceEndpoint(
+        repo_id="mistralai/Mistral-7B-Instruct-v0.2",  
+        temperature=0.5,
+        max_new_tokens=512
+    )
+    llm = ChatHuggingFace(llm=llm)
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages= True)
     conversation_chain = ConversationalRetrievalChain.from_llm(
         llm = llm,
