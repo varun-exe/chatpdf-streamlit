@@ -5,6 +5,7 @@ from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
 #from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 #from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.memory import ConversationBufferMemory
